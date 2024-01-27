@@ -1,5 +1,6 @@
 package com.example.course.resources.exceptions;
 
+import com.example.course.services.exceptions.DatabaseException;
 import com.example.course.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,15 @@ public class ResourceExceptionHandler
         String error = "Resource not found";
         HttpStatus status = HttpStatus.NOT_FOUND;
         StandardError standardError = new StandardError(Instant.now(), status.value(), error, resourceNotFoundException.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(status).body(standardError);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<StandardError> database(DatabaseException databaseException, HttpServletRequest request)
+    {
+        String error = "Database error";
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+        StandardError standardError = new StandardError(Instant.now(), status.value(), error, databaseException.getMessage(), request.getRequestURI());
         return ResponseEntity.status(status).body(standardError);
     }
 }
